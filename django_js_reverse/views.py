@@ -42,7 +42,7 @@ JS_EXCLUDE_URLNAMES = getattr(settings, 'JS_REVERSE_EXCLUDE_URLNAMES',
 JS_USE_SUBDOMAIN = (
     getattr(settings, 'JS_REVERSE_USE_SUBDOMAIN', JS_USE_SUBDOMAIN) and
     isinstance(getattr(settings, 'SUBDOMAIN_URLCONFS', None), dict) and
-    get_domain)
+    bool(get_domain))
 
 
 def urls_js(request=None):
