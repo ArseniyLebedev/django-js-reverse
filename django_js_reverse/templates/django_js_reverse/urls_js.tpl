@@ -1,46 +1,48 @@
 this.{{ js_var_name }} = (function () {
+    var config = {
+        'use_subdomains': {{ JS_USE_SUBDOMAIN }},
+        'urls': {{ urls|safe }},
+        'domains': {{ domains|safe }},
+        'url_prefix': '{{ url_prefix|escapejs }}'},
+        Urls = {};
 
-    function Urls() {}
+    Urls.get = function (name, subdomain) {
+        var domain;
 
-    Urls._instance = {
-        url_patterns:{}
-    };
+        if (config.use_subdomains && subdomain) {
+            domain = subdomain + '.' + location.host;
+        } else {
+            domain = location.host
+        }
 
-    Urls._get_url = function (url_pattern) {
-        var self = this._instance
+        return get_url(domain, name);
+    }
+
+    function get_url (domain, name) {
+        var urls = config['urls'],
+            rule = urls[config.use_subdomains ? domain : 'null'][name];
+
+        if (!rule) {
+            throw 'Unknow url name: ' + name;
+        }
+
         return function () {
-            var index, url, url_arg, url_args, _i, _len, _ref;
-            _ref = self.url_patterns[url_pattern], url = _ref[0], url_args = _ref[1];
+            var url_args = rule[1],
+                url = rule[0],
+                url_arg, index, _i, _len;
+
             for (index = _i = 0, _len = url_args.length; _i < _len; index = ++_i) {
                 url_arg = url_args[index];
                 url = url.replace("%(" + url_arg + ")s", arguments[index] || '');
             }
-            return '{{url_prefix|escapejs}}' + url;
-        };
-    };
 
-    Urls.init = function () {
-        var name, pattern, self, url_patterns, _i, _len, _ref;
-        url_patterns = [
-            {% for name, namespace_path, pattern in urls %}
-                [
-                    '{{name|escapejs}}', ['{{namespace_path}}{{pattern.0|escapejs}}', [{% for arg in pattern.1 %}'{{ arg|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}]]
-                ]{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ];
-        self = this._instance;
-        self.url_patterns = {};
-        for (_i = 0, _len = url_patterns.length; _i < _len; _i++) {
-            _ref = url_patterns[_i], name = _ref[0], pattern = _ref[1];
-            self.url_patterns[name] = pattern;
-            this[name] = this._get_url(name);
+            if (config.use_subdomains && domain !== location.host) {
+                return 'http://' + domain + config.url_prefix + url;
+            }
+
+            return config.url_prefix + url;
         }
-        return self;
-    };
+    }
 
     return Urls;
 })();
-
-this.{{ js_var_name }}.init();
-
-
