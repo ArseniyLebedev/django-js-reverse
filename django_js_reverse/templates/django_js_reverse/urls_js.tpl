@@ -3,14 +3,17 @@ this.{{ js_var_name }} = (function () {
         'use_subdomains': {{ JS_USE_SUBDOMAIN }},
         'urls': {{ urls|safe }},
         'domains': {{ domains|safe }},
-        'url_prefix': '{{ url_prefix|escapejs }}'},
+        'url_prefix': '{{ url_prefix|escapejs }}',
+        'root_domain': '{{ root_domain }}'},
         Urls = {};
 
     Urls.get = function (name, subdomain) {
-        var domain;
+        var domain = config.root_domain;
 
         if (config.use_subdomains && subdomain) {
-            domain = subdomain + '.' + location.host;
+            if (subdomain !== -1) {
+                domain = subdomain + '.' + domain;
+            }
         } else {
             domain = location.host
         }

@@ -60,18 +60,18 @@ def urls_js(request=None):
 
     if JS_USE_SUBDOMAIN:
         url_confs = settings.SUBDOMAIN_URLCONFS
-        _domain = get_domain()
+        root_domain = get_domain()
     else:
         url_confs = {None: getattr(request, 'urlconf', None)}
-        _domain = None
+        root_domain = None
 
     urls = {}
 
     for subdomain, urlconf in url_confs.items():
-        if subdomain is not None and _domain:
-            domain = '%s.%s' % (subdomain, _domain)
+        if subdomain is not None and root_domain:
+            domain = '%s.%s' % (subdomain, root_domain)
         else:
-            domain = _domain
+            domain = root_domain
 
         default_urlresolver = urlresolvers.get_resolver(urlconf)
         row = urls.setdefault(domain, {})
@@ -98,7 +98,8 @@ def urls_js(request=None):
             'url_prefix': urlresolvers.get_script_prefix(),
             'js_var_name': js_var_name,
             'JS_USE_SUBDOMAIN': json.dumps(JS_USE_SUBDOMAIN),
-            'domains': json.dumps(url_confs.keys())
+            'domains': json.dumps(url_confs.keys()),
+            'root_domain': root_domain
         },
         {})
 
