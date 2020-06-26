@@ -15,7 +15,7 @@ from django.template import loader
 from django.core import urlresolvers
 from django.conf import settings
 from django import get_version
-
+from distutils.version import StrictVersion
 from slimit import minify
 
 try:
@@ -29,7 +29,7 @@ from .js_reverse_settings import (JS_VAR_NAME, JS_MINIFY,
 
 
 content_type_keyword_name = 'content_type'
-if get_version() < '1.5':
+if StrictVersion(get_version()) < StrictVersion('1.5'):
     content_type_keyword_name = 'mimetype'
 
 
