@@ -100,8 +100,7 @@ def urls_js(request=None):
             'JS_USE_SUBDOMAIN': json.dumps(JS_USE_SUBDOMAIN),
             'domains': json.dumps(list(url_confs.keys())),
             'root_domain': root_domain
-        },
-        {})
+        })
 
     if minfiy:
         response_body = minify(
