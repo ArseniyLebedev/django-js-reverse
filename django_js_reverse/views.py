@@ -98,7 +98,7 @@ def urls_js(request=None):
             'url_prefix': urlresolvers.get_script_prefix(),
             'js_var_name': js_var_name,
             'JS_USE_SUBDOMAIN': json.dumps(JS_USE_SUBDOMAIN),
-            'domains': json.dumps(url_confs.keys()),
+            'domains': json.dumps(list(url_confs.keys())),
             'root_domain': root_domain
         },
         {})
