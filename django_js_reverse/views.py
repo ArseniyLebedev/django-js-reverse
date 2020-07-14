@@ -12,7 +12,10 @@ else:
 
 from django.core.exceptions import ImproperlyConfigured
 from django.template import loader
-from django.core import urlresolvers
+try:
+    from django.core import urlresolvers
+except ImportError:
+    from django.urls import resolvers as urlresolvers
 from django.conf import settings
 from django import get_version
 from distutils.version import StrictVersion
