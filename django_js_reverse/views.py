@@ -13,9 +13,14 @@ else:
 from django.core.exceptions import ImproperlyConfigured
 from django.template import loader
 try:
-    from django.core import urlresolvers
+    from django.core import urlresolvers as old_urlresolvers
 except ImportError:
-    from django.urls import resolvers as urlresolvers
+    from django.urls import resolvers as old_urlresolvers
+
+try:
+    from django.core.urlresolvers import get_script_prefix as get_script_prefix_versioned
+except ImportError:
+    from django.urls import get_script_prefix as get_script_prefix_versioned
 from django.conf import settings
 from django import get_version
 from distutils.version import StrictVersion
@@ -76,7 +81,7 @@ def urls_js(request=None):
         else:
             domain = root_domain
 
-        default_urlresolver = urlresolvers.get_resolver(urlconf)
+        default_urlresolver = old_urlresolvers.get_resolver(urlconf)
         row = urls.setdefault(domain, {})
 
         # prepare data for namespeced urls
@@ -98,7 +103,7 @@ def urls_js(request=None):
         'django_js_reverse/urls_js.tpl',
         {
             'urls': json.dumps(urls),
-            'url_prefix': urlresolvers.get_script_prefix(),
+            'url_prefix': get_script_prefix_versioned(),
             'js_var_name': js_var_name,
             'JS_USE_SUBDOMAIN': json.dumps(JS_USE_SUBDOMAIN),
             'domains': json.dumps(list(url_confs.keys())),
